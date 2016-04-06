@@ -83,11 +83,11 @@ def get_authenticated_service():
 
 def initialize_download(options):
   get_request = HttpRequest(self._http, options.file)
-	fh = file(options.tmp, 'w')
-	media = MediaIoBaseDownload(fh, get_request, chunksize=-1)		
-	response = None
-	while not done:
-		error = None
+  fh = file(options.tmp, 'w')
+  media = MediaIoBaseDownload(fh, get_request, chunksize=-1)		
+  response = None
+  while not done:
+    error = None
     try:
       print "Downloading file..."
       status, done = get_request.next_chunk()
@@ -110,10 +110,10 @@ def initialize_download(options):
       sleep_seconds = random.random() * max_sleep
       print "Sleeping %f seconds and then retrying..." % sleep_seconds
       time.sleep(sleep_seconds)
-	
-	options.file = options.tmp
-	initialize_upload(options)	
-	
+
+  options.file = options.tmp
+  initialize_upload(options)	
+
 
 
 def initialize_upload(options):
@@ -187,8 +187,8 @@ if __name__ == '__main__':
   parser.add_option("--file", dest="file", help="Video file to upload")
   parser.add_option("--title", dest="title", help="Video title",
     default="Test Title")
-	parser.add_option("--tmp", dest="tmp", 
-		help="Temp file name")
+  parser.add_option("--tmp", dest="tmp", 
+    help="Temp file name")
   parser.add_option("--description", dest="description",
     help="Video description",
     default="Uploaded from LeftStuff.com")
@@ -198,12 +198,12 @@ if __name__ == '__main__':
   (options, args) = parser.parse_args()
 
   if options.file is None:
-		exit("Please specify a valid file using the --file= parameter.") 
+    exit("Please specify a valid file using the --file= parameter.") 
 
-	if options.tmp is None:
-		exit("Please specify a valid tmp file using the --tmp= parameter.")
+  if options.tmp is None:
+    exit("Please specify a valid tmp file using the --tmp= parameter.")
 
-	if not os.path.exists(options.file):
-   	initialize_download(options) 
+  if not os.path.exists(options.file):
+    initialize_download(options) 
   else:
     initialize_upload(options)
