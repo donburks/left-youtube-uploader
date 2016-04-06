@@ -120,8 +120,6 @@ def initialize_upload(options):
   youtube = get_authenticated_service()
 
   tags = None
-  if options.keywords:
-    tags = options.keywords.split(",")
 
   insert_request = youtube.videos().insert(
     part="snippet,status",
@@ -130,7 +128,7 @@ def initialize_upload(options):
         title=options.title,
         description=options.description,
         tags=tags,
-        categoryId=options.category
+        categoryId=22
       ),
       status=dict(
         privacyStatus=options.privacyStatus
