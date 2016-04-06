@@ -9,7 +9,7 @@ import time
 
 from apiclient.discovery import build
 from apiclient.errors import HttpError
-from apiclient.http import MediaFileUpload
+from apiclient.http import MediaFileUpload, HttpRequest, MediaIoBaseDownload
 from oauth2client.file import Storage
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.tools import run
@@ -81,6 +81,41 @@ def get_authenticated_service():
     http=credentials.authorize(httplib2.Http()))
 
 
+def initialize_download(options):
+  get_request = HttpRequest(self._http, options.file)
+	fh = file(options.tmp, 'w')
+	media = MediaIoBaseDownload(fh, get_request, chunksize=-1)		
+	response = None
+	while not done:
+		error = None
+    try:
+      print "Downloading file..."
+      status, done = get_request.next_chunk()
+    except HttpError, e:
+      if e.resp.status in RETRIABLE_STATUS_CODES:
+        error = "A retriable HTTP error %d occurred:\n%s" % (e.resp.status,
+                                                             e.content)
+      else:
+        raise
+    except RETRIABLE_EXCEPTIONS, e:
+      error = "A retriable error occurred: %s" % e
+
+    if error is not None:
+      print error
+      retry += 1
+      if retry > MAX_RETRIES:
+        exit("No longer attempting to retry.")
+
+      max_sleep = 2 ** retry
+      sleep_seconds = random.random() * max_sleep
+      print "Sleeping %f seconds and then retrying..." % sleep_seconds
+      time.sleep(sleep_seconds)
+	
+	options.file = options.tmp
+	initialize_upload(options)	
+	
+
+
 def initialize_upload(options):
   youtube = get_authenticated_service()
 
@@ -121,6 +156,7 @@ def resumable_upload(insert_request):
       print "Uploading file..."
       status, response = insert_request.next_chunk()
       if 'id' in response:
+				os.remove(options.file)
         print "'%s' (video id: %s) was successfully uploaded." % (
           options.title, response['id'])
       else:
@@ -151,21 +187,23 @@ if __name__ == '__main__':
   parser.add_option("--file", dest="file", help="Video file to upload")
   parser.add_option("--title", dest="title", help="Video title",
     default="Test Title")
+	parser.add_option("--tmp", dest="tmp", 
+		help="Temp file name")
   parser.add_option("--description", dest="description",
     help="Video description",
-    default="Test Description")
-  parser.add_option("--category", dest="category",
-    help="Numeric video category. " +
-      "See https://developers.google.com/youtube/v3/docs/videoCategories/list",
-    default="22")
-  parser.add_option("--keywords", dest="keywords",
-    help="Video keywords, comma separated", default="")
+    default="Uploaded from LeftStuff.com")
   parser.add_option("--privacyStatus", dest="privacyStatus",
     help="Video privacy status: public, private or unlisted",
-    default="public")
+    default="unlisted")
   (options, args) = parser.parse_args()
 
-  if options.file is None or not os.path.exists(options.file):
-    exit("Please specify a valid file using the --file= parameter.")
+  if options.file is None:
+		exit("Please specify a valid file using the --file= parameter.") 
+
+	if options.tmp is None:
+		exit("Please specify a valid tmp file using the --tmp= parameter.")
+
+	if not os.path.exists(options.file):
+   	initialize_download(options) 
   else:
     initialize_upload(options)

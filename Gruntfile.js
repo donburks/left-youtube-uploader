@@ -19,15 +19,13 @@ module.exports = function (grunt) {
         '!node_modules/**/*'
       ]
     },
-    watch: {  // grunt-regarde (task renamed from regarde to watch)
+    watch: {  
       all: {
         files: '**/*',
         tasks: 'jshint'
       }
     }
   });
-
-  grunt.renameTask('regarde', 'watch');
 
   grunt.registerTask('default', [
     'jshint',

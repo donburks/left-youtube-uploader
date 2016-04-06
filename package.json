@@ -1,16 +1,16 @@
 {
-  "name": "youtube-uploader",
-  "description": "Youtube video uploader library for Node.js",
-  "version": "0.1.0",
+  "name": "left-youtube-uploader",
+  "description": "Youtube video uploader library for Node.js - customized for LeftStuff - Based on original youtube-uploader npm by https://github.com/pilwon",
+  "version": "0.1.5",
   "license": "MIT",
   "author": {
-    "name": "Pilwon Huh",
-    "email": "pilwon@gmail.com"
+    "name": "Don Burks",
+    "email": "don@leftstuff.com"
   },
-  "homepage": "https://github.com/pilwon/node-youtube-uploader",
+  "homepage": "https://github.com/donburks/left-youtube-uploader",
   "repository": {
     "type": "git",
-    "url": "git://github.com/pilwon/node-youtube-uploader.git"
+    "url": "git://github.com/donburks/left-youtube-uploader.git"
   },
   "keywords": [
     "youtube",
@@ -21,7 +21,8 @@
     "python",
     "wrapper",
     "client",
-    "library"
+    "library",
+		"leftstuff"
   ],
   "dependencies": {
     "lodash": "~1.3.1",
