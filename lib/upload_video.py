@@ -156,7 +156,7 @@ def resumable_upload(insert_request):
       print "Uploading file..."
       status, response = insert_request.next_chunk()
       if 'id' in response:
-				os.remove(options.file)
+        os.remove(options.file)
         print "'%s' (video id: %s) was successfully uploaded." % (
           options.title, response['id'])
       else:
