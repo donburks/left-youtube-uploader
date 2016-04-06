@@ -12,7 +12,7 @@ This library wraps [Google's sample code written in Python](https://developers.g
 
 ## Installation
 
-    $ npm install --save https://github.com/donburks/left-youtube-uploader
+    $ npm install https://github.com/donburks/left-youtube-uploader/tarball/master --save
 
 ## Usage
 
