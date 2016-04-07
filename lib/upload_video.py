@@ -82,7 +82,11 @@ def get_authenticated_service():
 
 
 def initialize_download(options):
-  get_request = HttpRequest(httplib2.Http(), options.file)
+  get_request = HttpRequest(
+    http=httplib2.Http, 
+    postproc=lambda r, c: c, 
+    uri=options.file
+  )
   fh = file(options.tmp, 'w')
   media = MediaIoBaseDownload(fh, get_request, chunksize=-1)		
   response = None

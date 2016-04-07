@@ -32,7 +32,7 @@ youtubeUploader.configure({
   youtubeUploader.upload({
     path: VIDEO_PATH,  // string
     title: TITLE,  // string
-		tmp: TMP, // string
+    tmp: TMP, // string
     description: DESCRIPTION,  // string
     keywords: KEYWORDS,  // array of string
     category: CATEGORY_ID,  // string (refer to https://developers.google.com/youtube/v3/docs/videoCategories/list)
