@@ -1,7 +1,7 @@
 {
   "name": "left-youtube-uploader",
   "description": "Youtube video uploader library for Node.js - customized for LeftStuff - Based on original youtube-uploader npm by https://github.com/pilwon",
-  "version": "0.1.5",
+  "version": "0.1.7",
   "license": "MIT",
   "author": {
     "name": "Don Burks",
