@@ -7,6 +7,7 @@ import random
 import sys
 import time
 
+from pprint import pprint
 from apiclient.discovery import build
 from apiclient.errors import HttpError
 from apiclient.http import MediaFileUpload, HttpRequest, MediaIoBaseDownload
@@ -14,14 +15,6 @@ from oauth2client.file import Storage
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.tools import run
 from optparse import OptionParser
-
-
-# Explicitly tell the underlying HTTP transport library not to retry, since
-# we are handling retry logic ourselves.
-httplib2.RETRIES = 1
-
-# Maximum number of times to retry before giving up.
-MAX_RETRIES = 10
 
 # Always retry when these exceptions are raised.
 RETRIABLE_EXCEPTIONS = (httplib2.HttpLib2Error, IOError, httplib.NotConnected,
@@ -82,30 +75,32 @@ def get_authenticated_service():
 
 
 def initialize_download(options):
+  done=None
   get_request = HttpRequest(
-    http=httplib2.Http, 
+    http=httplib2.Http(), 
     postproc=lambda r, c: c, 
-    uri=options.file
+    uri=options.file,
+    method='GET',
+    body=None,
+    headers=dict(get="")
   )
   fh = file(options.tmp, 'w')
   media = MediaIoBaseDownload(fh, get_request, chunksize=-1)		
-  response = None
-  while not done:
-    error = None
-    try:
-      print "Downloading file..."
-      status, done = get_request.next_chunk()
-    except HttpError, e:
-      if e.resp.status in RETRIABLE_STATUS_CODES:
-        error = "A retriable HTTP error %d occurred:\n%s" % (e.resp.status,
-                                                             e.content)
-      else:
-        raise
-    except RETRIABLE_EXCEPTIONS, e:
-      error = "A retriable error occurred: %s" % e
+  error = None
+  try:
+    print "Downloading file..."
+    status, done = media.next_chunk()
+  except HttpError, e:
+    if e.resp.status in RETRIABLE_STATUS_CODES:
+      error = "A retriable HTTP error %d occurred:\n%s" % (e.resp.status,
+                                                           e.content)
+    else:
+      raise
+  except RETRIABLE_EXCEPTIONS, e:
+    error = "A retriable error occurred: %s" % e
 
-    if error is not None:
-      print error
+  if error is not None:
+    print error
 
   options.file = options.tmp
   initialize_upload(options)	
@@ -129,11 +124,10 @@ def initialize_upload(options):
         privacyStatus=options.privacyStatus
       )
     ),
+
     # chunksize=-1 means that the entire file will be uploaded in a single
-    # HTTP request. (If the upload fails, it will still be retried where it
-    # left off.) This is usually a best practice, but if you're using Python
-    # older than 2.6 or if you're running on App Engine, you should set the
-    # chunksize to something like 1024 * 1024 (1 megabyte).
+    # HTTP request. 
+
     media_body=MediaFileUpload(options.file, chunksize=-1, resumable=True)
   )
 
